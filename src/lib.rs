@@ -1,4 +1,4 @@
-use pinocchio::{account_info::AccountInfo, instruction::Seed, program_error::ProgramError, pubkey::{find_program_address, Pubkey}, ProgramResult};
+use pinocchio::{account_info::AccountInfo, instruction::{Seed, Signer}, program_error::ProgramError, pubkey::{find_program_address, Pubkey}, ProgramResult};
 use pinocchio::entrypoint;
 use pinocchio_system::instructions::Transfer;
 use pinocchio::nostd_panic_handler;
@@ -7,8 +7,8 @@ use pinocchio::nostd_panic_handler;
 entrypoint!(process_instruction);
 nostd_panic_handler!();
 
-pub mod instructions;
-pub use instructions::*;
+// pub mod instructions;
+// pub use instructions::*;
 
 
 // 22222222222222222222222222222222222222222222
@@ -92,10 +92,10 @@ pub struct Deposit<'a> {
     pub instruction_data: DepositIntructionData,
 }
 
-impl<'a> TryFrom(&'a [u8], &'a [AccountInfo])> for Deposit<'a> {
+impl<'a> TryFrom<(&'a [u8], &'a [AccountInfo])> for Deposit<'a> {
     type Error = ProgramError;
 
-    fn try_from((data, accounts)): (&'a [u8], &'a [AccountInfo]) -> Result<Self, Self::Error> {
+    fn try_from((data, accounts): (&'a [u8], &'a [AccountInfo])) -> Result<Self, Self::Error> {
         let accounts = DepositAccounts::try_from(accounts)?;
         let instruction_data = DepositIntructionData::try_from(data)?;
 
@@ -130,7 +130,7 @@ pub struct  WithdrawAccounts<'a> {
 impl<'a> TryFrom<&'a [AccountInfo]> for WithdrawAccounts<'a> {
     type Error = ProgramError;
 
-    fn try_from(value: &'a [AccountInfo]) -> Result<Self, Self::Error> {
+    fn try_from(accounts: &'a [AccountInfo]) -> Result<Self, Self::Error> {
         let [owner, vault, _] = accounts else {
             return Err(ProgramError::NotEnoughAccountKeys);
         };
@@ -163,7 +163,7 @@ pub struct Withdraw<'a> {
 impl<'a> TryFrom<&'a [AccountInfo]> for Withdraw<'a> {
     type Error = ProgramError;
 
-    fn try_from(accounts: &'a [AccountInfo]) -> Resultlll<Self, Self::Error> {
+    fn try_from(accounts: &'a [AccountInfo]) -> Result<Self, Self::Error> {
         let accounts = WithdrawAccounts::try_from(accounts)?;
 
         Ok(Self { accounts })
